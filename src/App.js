@@ -13,7 +13,7 @@ import Register from './components/Register/Register';
 import './App.css';
 
 const app = new Clarifai.App({
-  apiKey: 'f33286c4252c4be2831316717977a9c1'
+  apiKey: ''
 });
 
 
