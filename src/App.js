@@ -38,7 +38,24 @@ class App extends Component {
       box: {},
       route: 'signin',
       isSignedIn: false,
+      user: {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined: '',
+      },
     }
+  }
+
+  loadUser = data => {
+    this.setState({
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined,
+    })
   }
 
   calculateLocation = data => {
@@ -68,7 +85,24 @@ class App extends Component {
 
     app.models.initModel({id: Clarifai.FACE_DETECT_MODEL, version: "aa7f35c01e0642fda5cf400f543e7c40"})
       .then(faceDerectlModel => faceDerectlModel.predict(this.state.input))
-      .then(response => this.displayFaceBox(this.calculateLocation(response)))
+      .then(response => {
+        if (response) {
+          fetch('http//:localhost:3001/image',
+          {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: this.state.user.id,
+            })
+          })
+          .then(res => res.json())
+          .then(count => this.setState({ user: {
+            ...this.state.user,
+            entries: count,
+          }}))
+        }
+        this.displayFaceBox(this.calculateLocation(response));
+      })
       .catch(err => console.log(err));
   }
 
@@ -82,7 +116,7 @@ class App extends Component {
   }
 
   render() {
-    const { imageUrl, box, route, isSignedIn } = this.state;
+    const { imageUrl, box, route, isSignedIn, user } = this.state;
     return (
       <div className="App">
         <Particles className='particles'
@@ -92,7 +126,7 @@ class App extends Component {
         { route === 'home'
           ? <div>
               <Logo />
-              <Rank />
+              <Rank name={user.name} entries={user.entries}/>
               <ImageLinkForm
                 onInputChange={this.onInputChange}
                 onButtonSubmit={this.onButtonSubmit}
@@ -104,8 +138,8 @@ class App extends Component {
             </div>
           : (
             route === 'signin'
-              ? <Signin onRouteChange={this.onRouteChange} />
-              : <Register onRouteChange={this.onRouteChange} />
+              ? <Signin onRouteChange={this.onRouteChange} loadUser={this.loadUser}/>
+              : <Register onRouteChange={this.onRouteChange} loadUser={this.loadUser}/>
             )
         }
       </div>
