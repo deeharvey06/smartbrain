@@ -29,7 +29,7 @@ class Register extends Component {
     })
     .then(res => res.json())
     .then(user => {
-      if (user) {
+      if (user.id) {
         loadUser(user)
         onRouteChange('home');
       }
