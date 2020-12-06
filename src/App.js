@@ -78,7 +78,7 @@ class App extends Component {
 
   onButtonSubmit = (e) => {
     this.setState({ imageUrl: this.state.input });
-    fetch('http//:localhost:3001/imageurl',
+    fetch('https://lit-beyond-61806.herokuapp.com/imageurl',
       {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
@@ -89,7 +89,7 @@ class App extends Component {
       .then(response => response.json())
       .then(response => {
         if (response) {
-          fetch('http//:localhost:3001/image',
+          fetch('https://lit-beyond-61806.herokuapp.com/image',
           {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
@@ -110,7 +110,7 @@ class App extends Component {
   }
 
   onRouteChange = route => {
-    if (route === 'signout') {
+    if (route === 'signin') {
       this.setState(initialState);
     } else if ( route === 'home') {
       this.setState({ isSignedIn: true });
