@@ -18,9 +18,9 @@ class Register extends Component {
     const { onRouteChange, loadUser } = this.props;
     const { email, password, name } = this.state;
 
-    fetch('http//:localhost:3001/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/' },
+    fetch('https://lit-beyond-61806.herokuapp.com/register', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email,
         password,
@@ -34,13 +34,14 @@ class Register extends Component {
         onRouteChange('home');
       }
     })
+    .catch(console.log)
   }
 
   render() {
     const { email, password, name } = this.state
 
     return (
-      <article class="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
+      <article className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
         <main className="pa4 black-80">
           <div className="measure">
             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
@@ -64,7 +65,7 @@ class Register extends Component {
                 <input
                   className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                   type="email"
-                  name="email-address"
+                  name="email"
                   value={email}
                   id="email-address"
                   onChange={this.onInputChange}
