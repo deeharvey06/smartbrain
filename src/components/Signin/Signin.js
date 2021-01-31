@@ -1,42 +1,42 @@
-import React, { Component}from 'react';
+import React, { Component } from "react";
 
 class Signin extends Component {
   constructor() {
     super();
     this.state = {
-      signInEmail: '',
-      signInPassword: '',
-    }
+      signInEmail: "",
+      signInPassword: "",
+    };
   }
 
-  onEmailChange = e => {
-    this.setState({ signInEmail: e.target.value })
-  }
+  onEmailChange = (e) => {
+    this.setState({ signInEmail: e.target.value });
+  };
 
-  onPasswordChange = e => {
-    this.setState({ signInPassword: e.target.value })
-  }
+  onPasswordChange = (e) => {
+    this.setState({ signInPassword: e.target.value });
+  };
 
   onSubmitSignIn = () => {
     const { signInEmail, signInPassword } = this.state;
-    const { onRouteChange, loadUser } = this.props
+    const { onRouteChange, loadUser } = this.props;
 
-    fetch('https://lit-beyond-61806.herokuapp.com/signin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("https://smart-brain-cd.herokuapp.com/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: signInEmail,
-        password: signInPassword
+        password: signInPassword,
       }),
     })
-    .then(response => response.json())
-    .then(user => {
-      if(user.id) {
-        loadUser(user);
-        onRouteChange('home');
-      }
-    })
-  }
+      .then((response) => response.json())
+      .then((user) => {
+        if (user.id) {
+          loadUser(user);
+          onRouteChange("home");
+        }
+      });
+  };
 
   render() {
     const { onRouteChange } = this.props;
@@ -48,7 +48,9 @@ class Signin extends Component {
               <legend className="f1 fw6 ph0 mh0">Sign In</legend>
 
               <div className="mt3">
-                <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
+                <label className="db fw6 lh-copy f6" htmlFor="email-address">
+                  Email
+                </label>
                 <input
                   className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                   type="email"
@@ -59,7 +61,9 @@ class Signin extends Component {
               </div>
 
               <div className="mv3">
-                <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
+                <label className="db fw6 lh-copy f6" htmlFor="password">
+                  Password
+                </label>
                 <input
                   className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                   type="password"
@@ -80,7 +84,12 @@ class Signin extends Component {
             </div>
 
             <div className="lh-copy mt3">
-              <p onClick={() => onRouteChange('register')} className="f6 link dim black db pointer">Register</p>
+              <p
+                onClick={() => onRouteChange("register")}
+                className="f6 link dim black db pointer"
+              >
+                Register
+              </p>
             </div>
           </div>
         </main>

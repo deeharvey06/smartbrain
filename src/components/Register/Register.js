@@ -1,44 +1,44 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 class Register extends Component {
   constructor() {
     super();
     this.state = {
-      email: '',
-      password: '',
-      name: '',
-    }
+      email: "",
+      password: "",
+      name: "",
+    };
   }
 
-  onInputChange = e => {
+  onInputChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
-  }
+  };
 
   onSubmitRegister = () => {
     const { onRouteChange, loadUser } = this.props;
     const { email, password, name } = this.state;
 
-    fetch('https://lit-beyond-61806.herokuapp.com/register', {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("https://smart-brain-cd.herokuapp.com/register", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email,
         password,
         name,
       }),
     })
-    .then(res => res.json())
-    .then(user => {
-      if (user.id) {
-        loadUser(user)
-        onRouteChange('home');
-      }
-    })
-    .catch(console.log)
-  }
+      .then((res) => res.json())
+      .then((user) => {
+        if (user.id) {
+          loadUser(user);
+          onRouteChange("home");
+        }
+      })
+      .catch(console.log);
+  };
 
   render() {
-    const { email, password, name } = this.state
+    const { email, password, name } = this.state;
 
     return (
       <article className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
@@ -48,7 +48,9 @@ class Register extends Component {
               <legend className="f1 fw6 ph0 mh0">Register</legend>
 
               <div className="mt3">
-                <label className="db fw6 lh-copy f6" htmlFor="name">Name</label>
+                <label className="db fw6 lh-copy f6" htmlFor="name">
+                  Name
+                </label>
                 <input
                   className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                   type="name"
@@ -59,9 +61,10 @@ class Register extends Component {
                 />
               </div>
 
-
               <div className="mt3">
-                <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
+                <label className="db fw6 lh-copy f6" htmlFor="email-address">
+                  Email
+                </label>
                 <input
                   className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                   type="email"
@@ -73,7 +76,9 @@ class Register extends Component {
               </div>
 
               <div className="mv3">
-                <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
+                <label className="db fw6 lh-copy f6" htmlFor="password">
+                  Password
+                </label>
                 <input
                   className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                   type="password"
