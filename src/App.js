@@ -26,7 +26,7 @@ const particlesOptions = {
 const initialState = {
   input: '',
   imageUrl: '',
-  box: {},
+  boxes: [],
   route: 'signin',
   isSignedIn: false,
   user: {
@@ -54,22 +54,24 @@ class App extends Component {
     })
   }
 
-  calculateLocation = data => {
-    const clarifaiFace = data.outputs.[0].data.regions[0].region_info.bounding_box;
-    const image = document.getElementById('inputimage')
-    const width =  Number(image.width);
-    const height = Number(image.height);
+  calculateFaceLocations = data => {
+    return data.outputs.[0].data.regions.map(face => {
+      const clarifaiFace = face.region_info.bounding_box;
+      const image = document.getElementById('inputimage')
+      const width =  Number(image.width);
+      const height = Number(image.height);
 
-    return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - (clarifaiFace.right_col * width),
-      bottomRow: height - (clarifaiFace.bottom_row * height),
-    }
+      return {
+        leftCol: clarifaiFace.left_col * width,
+        topRow: clarifaiFace.top_row * height,
+        rightCol: width - (clarifaiFace.right_col * width),
+        bottomRow: height - (clarifaiFace.bottom_row * height),
+      }
+    });
   }
 
-  displayFaceBox = box => {
-    this.setState({ box });
+  displayFaceBox = boxes => {
+    this.setState({ boxes });
   }
 
   onInputChange = (e) => {
@@ -104,7 +106,7 @@ class App extends Component {
           }}))
           .catch(console.log);
         }
-        this.displayFaceBox(this.calculateLocation(response));
+        this.displayFaceBox(this.calculateFaceLocations(response));
       })
       .catch(err => console.log(err));
   }
@@ -119,7 +121,7 @@ class App extends Component {
   }
 
   render() {
-    const { imageUrl, box, route, isSignedIn, user } = this.state;
+    const { imageUrl, boxes, route, isSignedIn, user } = this.state;
     return (
       <div className="App">
         <Particles className='particles'
@@ -136,7 +138,7 @@ class App extends Component {
               />
               <FaceRecognition
                 imageUrl={imageUrl}
-                box={box}
+                boxes={boxes}
               />
             </div>
           : (
