@@ -21,7 +21,7 @@ class Signin extends Component {
     const { signInEmail, signInPassword } = this.state;
     const { onRouteChange, loadUser } = this.props;
 
-    fetch("https://smart-brain-cd.herokuapp.com/signin", {
+    fetch("https://smart-brain-api-cdh.herokuapp.com/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -18,7 +18,7 @@ class Register extends Component {
     const { onRouteChange, loadUser } = this.props;
     const { email, password, name } = this.state;
 
-    fetch("https://smart-brain-cd.herokuapp.com/register", {
+    fetch("https://smart-brain-api-cdh.herokuapp.com/register", {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

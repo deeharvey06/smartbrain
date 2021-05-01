@@ -78,7 +78,7 @@ class App extends Component {
 
   onButtonSubmit = (e) => {
     this.setState({ imageUrl: this.state.input });
-    fetch('https://lit-beyond-61806.herokuapp.com/imageurl',
+    fetch('https://smart-brain-api-cdh.herokuapp.com/imageurl',
       {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
@@ -89,7 +89,7 @@ class App extends Component {
       .then(response => response.json())
       .then(response => {
         if (response) {
-          fetch('https://lit-beyond-61806.herokuapp.com/image',
+          fetch('https://smart-brain-api-cdh.herokuapp.com/image',
           {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
