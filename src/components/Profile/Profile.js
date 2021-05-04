@@ -12,23 +12,24 @@ class Profile extends Component {
     }
   }
 
-  // onProfileUpdate = (data) => {
-  //   fetch(`http://localhost:3000/profile/${this.props.user.id}`, {
-  //     method: 'post',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': window.sessionStorage.getItem('token')
-  //     },
-  //     body: JSON.stringify({
-  //       formInput: data
-  //     })
-  //   }).then(resp => {
-  //     if (resp.status === 200 || resp.status === 304) {
-  //       this.props.toggleModal();
-  //       this.props.loadUser({ ...this.props.user, ...data });
-  //     }
-  //   }).catch(console.log)
-  // }
+  onProfileUpdate = (data) => {
+    const { toggleModal, loadUser, user } = this.props;
+    fetch(`http://localhost:3000/profile/${user.id}`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': window.sessionStorage.getItem('token')
+      },
+      body: JSON.stringify({
+        formInput: data
+      })
+    }).then(resp => {
+      if (resp.status === 200 || resp.status === 304) {
+        toggleModal();
+        loadUser({ ...user, ...data });
+      }
+    }).catch(console.log)
+  }
 
   onFormChange = (event) => {
     const { name, value } = event.target
@@ -88,7 +89,7 @@ class Profile extends Component {
 
             <div className='mt4' style={{ display: 'flex', justifyContent: 'space-evenly'}}>
               <button className='b pa2 grow pointer hover-white w-40 bg-light-blue b--black-20'
-              >
+                onClick={() => this.onProfileUpdate({name, age, pet})}>
                 Save
               </button>
               <button className='b pa2 grow pointer hover-white w-40 bg-light-red b--black-20'
