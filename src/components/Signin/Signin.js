@@ -1,32 +1,30 @@
 import React, { Component } from "react";
-
+import './Signin.css';
 class Signin extends Component {
   constructor() {
     super();
     this.state = {
-      signInEmail: "",
-      signInPassword: "",
+      email: "",
+      password: "",
     };
   }
 
-  onEmailChange = (e) => {
-    this.setState({ signInEmail: e.target.value });
-  };
+  onInputChange = (e) => {
+    const { name, value } = e.target;
 
-  onPasswordChange = (e) => {
-    this.setState({ signInPassword: e.target.value });
+    this.setState({ [name]: value });
   };
 
   onSubmitSignIn = () => {
-    const { signInEmail, signInPassword } = this.state;
+    const { email, password } = this.state;
     const { onRouteChange, loadUser } = this.props;
 
     fetch("https://smart-brain-api-cdh.herokuapp.com/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: signInEmail,
-        password: signInPassword,
+        email,
+        password,
       }),
     })
       .then((response) => response.json())
@@ -36,10 +34,14 @@ class Signin extends Component {
           onRouteChange("home");
         }
       });
+
+    this.setState({ email: "", password: "",})
   };
 
   render() {
     const { onRouteChange } = this.props;
+    const { email, password } = this.state;
+
     return (
       <article className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
         <main className="pa4 black-80">
@@ -52,11 +54,12 @@ class Signin extends Component {
                   Email
                 </label>
                 <input
-                  className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                  className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100 hover-black"
                   type="email"
-                  name="email-address"
+                  name="email"
+                  value={email}
                   id="email-address"
-                  onChange={this.onEmailChange}
+                  onChange={this.onInputChange}
                 />
               </div>
 
@@ -65,11 +68,12 @@ class Signin extends Component {
                   Password
                 </label>
                 <input
-                  className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                  className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100 hover-black"
                   type="password"
                   name="password"
+                  value={password}
                   id="password"
-                  onChange={this.onPasswordChange}
+                  onChange={this.onInputChange}
                 />
               </div>
             </fieldset>
