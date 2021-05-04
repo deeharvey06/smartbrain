@@ -8,6 +8,8 @@ import Rank from './components/Rank/Rank';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Signin from './components/Signin/Signin';
 import Register from './components/Register/Register';
+import Modal from './components/Modal/Modal';
+import Profile from './components/Profile/Profile';
 
 import './App.css';
 
@@ -29,14 +31,17 @@ const initialState = {
   boxes: [],
   route: 'signin',
   isSignedIn: false,
+  isProfileOpen: false,
   user: {
     id: '',
     name: '',
     email: '',
     entries: 0,
     joined: '',
+    age: 0,
+    pet: ''
   },
-}
+};
 
 class App extends Component {
   constructor() {
@@ -120,14 +125,29 @@ class App extends Component {
     this.setState({ route });
   }
 
+  toogleModal = () => {
+    this.setState(prevState => ({
+      isProfileOpen: !prevState.isProfileOpen
+    }));
+  }
+
   render() {
-    const { imageUrl, boxes, route, isSignedIn, user } = this.state;
+    const { imageUrl, boxes, route, isSignedIn, user, isProfileOpen } = this.state;
     return (
       <div className="App">
         <Particles className='particles'
           params={particlesOptions}
         />
-        <Navigation onRouteChange={this.onRouteChange} isSignedIn={isSignedIn}/>
+        <Navigation
+          onRouteChange={this.onRouteChange}
+          isSignedIn={isSignedIn}
+          toggleModal={this.toogleModal}
+        />
+        { isProfileOpen &&
+          <Modal>
+            <Profile isProfileOpen={isProfileOpen} toggleModal={this.toogleModal} user={user}/>
+          </Modal>
+        }
         { route === 'home'
           ? <div>
               <Logo />
