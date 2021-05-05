@@ -15,6 +15,10 @@ class Signin extends Component {
     this.setState({ [name]: value });
   };
 
+  saveAuthTokenInSessions = (token) => {
+    window.sessionStorage.setItem('token', token);
+  }
+
   onSubmitSignIn = () => {
     const { email, password } = this.state;
     const { onRouteChange, loadUser } = this.props;
@@ -28,12 +32,14 @@ class Signin extends Component {
       }),
     })
       .then((response) => response.json())
-      .then((user) => {
-        if (user.id) {
-          loadUser(user);
+      .then((data) => {
+        if (data && data.success === true) {
+          this.saveAuthTokenInSessions(data.token);
+          loadUser(data.user);
           onRouteChange("home");
         }
-      });
+      })
+      .catch(console.log);
 
     this.setState({ email: "", password: "",})
   };

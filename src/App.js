@@ -16,7 +16,7 @@ import './App.css';
 const particlesOptions = {
   particles: {
     number: {
-      value: 150,
+      value: 30,
       density: {
         enable: true,
         value_area: 800
@@ -30,8 +30,8 @@ const initialState = {
   imageUrl: '',
   boxes: [],
   route: 'signin',
-  isSignedIn: false,
   isProfileOpen: false,
+  isSignedIn: false,
   user: {
     id: '',
     name: '',
@@ -40,8 +40,8 @@ const initialState = {
     joined: '',
     age: 0,
     pet: ''
-  },
-};
+  }
+}
 
 class App extends Component {
   constructor() {
@@ -49,28 +49,63 @@ class App extends Component {
     this.state = initialState;
   }
 
-  loadUser = data => {
-    this.setState({
-      id: data.id,
-      name: data.name,
-      email: data.email,
-      entries: data.entries,
-      joined: data.joined,
-    })
+  componentDidMount() {
+    const token = window.sessionStorage.getItem('token');
+    if (token) {
+      fetch('https://smart-brain-api-cdh.herokuapp.com/signin', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.id) {
+            fetch(`https://smart-brain-api-cdh.herokuapp.com/profile/${data.id}`, {
+              method: 'get',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
+              }
+            })
+            .then(response => response.json())
+            .then(user => {
+              if (user && user.email) {
+                this.loadUser(user)
+                this.onRouteChange('home');
+              }
+            })
+          }
+        })
+        .catch(console.log)
+    }
   }
 
-  calculateFaceLocations = data => {
-    return data.outputs.[0].data.regions.map(face => {
-      const clarifaiFace = face.region_info.bounding_box;
-      const image = document.getElementById('inputimage')
-      const width =  Number(image.width);
-      const height = Number(image.height);
+  loadUser = (data) => {
+    this.setState({
+      user: {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        entries: data.entries,
+        joined: data.joined
+      }
+    });
+  }
 
+  calculateFaceLocation = (data) => {
+    const image = document.getElementById('inputimage');
+    const width = Number(image.width);
+    const height = Number(image.height);
+
+    return data.outputs[0].data.regions.map(face => {
+      const clarifaiFace = face.region_info.bounding_box;
       return {
         leftCol: clarifaiFace.left_col * width,
         topRow: clarifaiFace.top_row * height,
         rightCol: width - (clarifaiFace.right_col * width),
-        bottomRow: height - (clarifaiFace.bottom_row * height),
+        bottomRow: height - (clarifaiFace.bottom_row * height)
       }
     });
   }
@@ -79,75 +114,80 @@ class App extends Component {
     this.setState({ boxes });
   }
 
-  onInputChange = (e) => {
+  onInputChange = e => {
     this.setState({ input: e.target.value });
   }
 
-  onButtonSubmit = (e) => {
-    this.setState({ imageUrl: this.state.input });
-    fetch('https://smart-brain-api-cdh.herokuapp.com/imageurl',
-      {
+  onButtonSubmit = () => {
+    this.setState({imageUrl: this.state.input});
+      fetch('https://smart-brain-api-cdh.herokuapp.com/imageurl', {
         method: 'post',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': window.sessionStorage.getItem('token')
+        },
         body: JSON.stringify({
-        input: this.state.input,
+          input: this.state.input
         })
       })
       .then(response => response.json())
       .then(response => {
         if (response) {
-          fetch('https://smart-brain-api-cdh.herokuapp.com/image',
-          {
+          fetch('https://smart-brain-api-cdh.herokuapp.com/image', {
             method: 'put',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': window.sessionStorage.getItem('token')
+            },
             body: JSON.stringify({
-              id: this.state.user.id,
+              id: this.state.user.id
             })
           })
-          .then(res => res.json())
-          .then(count => this.setState({ user: {
-            ...this.state.user,
-            entries: count,
-          }}))
-          .catch(console.log);
+            .then(response => response.json())
+            .then(count => {
+              this.setState(Object.assign(this.state.user, { entries: count}))
+            })
+            .catch(console.log)
+
         }
-        this.displayFaceBox(this.calculateFaceLocations(response));
+        this.displayFaceBox(this.calculateFaceLocation(response))
       })
       .catch(err => console.log(err));
   }
 
   onRouteChange = route => {
-    if (route === 'signin') {
+    if (route === 'signout') {
       return this.setState(initialState);
-    } else if ( route === 'home') {
+    } else if (route === 'home') {
       this.setState({ isSignedIn: true });
     }
     this.setState({ route });
   }
 
-  toogleModal = () => {
-    this.setState(prevState => ({
-      isProfileOpen: !prevState.isProfileOpen
+  toggleModal = () => {
+    this.setState(state => ({
+      ...state,
+      isProfileOpen: !state.isProfileOpen,
     }));
   }
 
   render() {
-    const { imageUrl, boxes, route, isSignedIn, user, isProfileOpen } = this.state;
+    const { isSignedIn, imageUrl, route, boxes, isProfileOpen, user } = this.state;
     return (
       <div className="App">
         <Particles className='particles'
           params={particlesOptions}
         />
         <Navigation
-          onRouteChange={this.onRouteChange}
           isSignedIn={isSignedIn}
-          toggleModal={this.toogleModal}
+          onRouteChange={this.onRouteChange}
+          toggleModal={this.toggleModal}
         />
         { isProfileOpen &&
           <Modal>
           <Profile
             isProfileOpen={isProfileOpen}
-            toggleModal={this.toogleModal}
+            toggleModal={this.toggleModal}
             user={user}
             loadUser={this.loadUser}
           />
@@ -156,21 +196,18 @@ class App extends Component {
         { route === 'home'
           ? <div>
               <Logo />
-              <Rank name={user.name} entries={user.entries}/>
+              <Rank name={user.name} entries={user.entries} />
               <ImageLinkForm
                 onInputChange={this.onInputChange}
                 onButtonSubmit={this.onButtonSubmit}
               />
-              <FaceRecognition
-                imageUrl={imageUrl}
-                boxes={boxes}
-              />
+              <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
             </div>
           : (
             route === 'signin'
-              ? <Signin onRouteChange={this.onRouteChange} loadUser={this.loadUser}/>
-              : <Register onRouteChange={this.onRouteChange} loadUser={this.loadUser}/>
-            )
+              ? <Signin loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
+              : <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
+          )
         }
       </div>
     );

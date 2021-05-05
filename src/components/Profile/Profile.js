@@ -14,7 +14,7 @@ class Profile extends Component {
 
   onProfileUpdate = (data) => {
     const { toggleModal, loadUser, user } = this.props;
-    fetch(`http://localhost:3000/profile/${user.id}`, {
+    fetch(`https://smart-brain-api-cdh.herokuapp.com/${user.id}`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
